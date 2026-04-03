@@ -1,57 +1,46 @@
 import { useEffect, useState } from 'react';
+import { Shield } from 'lucide-react';
 
 const TopBar = () => {
   const [time, setTime] = useState(new Date());
-  const [threatLevel, setThreatLevel] = useState('ELEVATED');
 
   useEffect(() => {
     const interval = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    const levels = ['ELEVATED', 'HIGH', 'ELEVATED', 'SEVERE'];
-    const interval = setInterval(() => {
-      setThreatLevel(levels[Math.floor(Math.random() * levels.length)]);
-    }, 30000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const threatColor = threatLevel === 'SEVERE' ? 'text-threat-critical' : threatLevel === 'HIGH' ? 'text-threat-high' : 'text-threat-medium';
+  const utc = time.toISOString();
+  const timeStr = utc.slice(11, 19);
+  const dateStr = time.toLocaleDateString('en-US', { 
+    day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' 
+  }).toUpperCase();
 
   return (
-    <div className="h-12 bg-card border-b border-border flex items-center justify-between px-4 shrink-0">
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-threat-critical animate-pulse" />
-          <span className="font-mono text-sm font-bold tracking-wider text-foreground">
-            GLOBAL SENTINEL
-          </span>
-        </div>
-        <span className="text-muted-foreground text-xs font-mono hidden md:inline">
-          GEOPOLITICAL MONITORING SYSTEM v4.2
+    <header className="h-11 bg-card/80 backdrop-blur-sm border-b border-border flex items-center justify-between px-3 md:px-5 shrink-0 z-50">
+      <div className="flex items-center gap-2.5">
+        <Shield className="w-4 h-4 text-primary" />
+        <span className="font-mono text-xs font-bold tracking-[0.2em] text-foreground">
+          GLOBAL SENTINEL
+        </span>
+        <span className="hidden md:inline text-[10px] font-mono text-muted-foreground tracking-wider ml-1">
+          SITUATIONAL AWARENESS PLATFORM
         </span>
       </div>
-
-      <div className="flex items-center gap-6">
-        <div className="hidden sm:flex items-center gap-2">
-          <span className="text-xs text-muted-foreground font-mono">THREAT LEVEL:</span>
-          <span className={`text-xs font-mono font-bold ${threatColor}`}>
-            {threatLevel}
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-1.5">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-threat-low opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-threat-low" />
           </span>
+          <span className="text-[10px] font-mono font-semibold text-threat-low tracking-wider">LIVE</span>
         </div>
-
-        <div className="flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-threat-low animate-pulse" />
-          <span className="text-xs text-muted-foreground font-mono">LIVE</span>
-        </div>
-
-        <div className="font-mono text-xs text-foreground tabular-nums">
-          <span className="text-muted-foreground mr-1">UTC</span>
-          {time.toUTCString().slice(17, 25)}
+        <div className="font-mono text-[11px] text-foreground/80 tabular-nums tracking-wider">
+          <span className="text-muted-foreground">{dateStr} </span>
+          <span className="text-foreground">{timeStr}</span>
+          <span className="text-muted-foreground ml-0.5">Z</span>
         </div>
       </div>
-    </div>
+    </header>
   );
 };
 
